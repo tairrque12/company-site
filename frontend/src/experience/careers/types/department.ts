@@ -4,4 +4,5 @@ export interface Department {
     slug: string;
     tagline: string;
     description: string;
+    imageUrl: string;
 };

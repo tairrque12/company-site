@@ -38,6 +38,7 @@ public class DepartmentServiceTest {
                 .slug("robotics")
                 .tagline("Engineer The Impossible")
                 .description("I love this")
+                .imageUrl("robotics.jpg")
                 .build();
         //WHEN SOMEONE CALLS FIND-BY-SLUG WITH robotics, return the entity
         when(departmentRepository.findBySlug("robotics")).thenReturn(Optional.of(entity));
@@ -48,6 +49,7 @@ public class DepartmentServiceTest {
         //ASSERT - VERIFY DTO FIELDS
         assertThat(result.getName()).isEqualTo("Robotics");
         assertThat(result.getSlug()).isEqualTo("robotics");
+        assertThat(result.getImageUrl()).isEqualTo("robotics.jpg");
     }
     @Test
     void shouldReturnAllDepartmentsAsDtos(){
@@ -58,6 +60,7 @@ public class DepartmentServiceTest {
                 .slug("robotics")
                 .tagline("Engineer The Impossible")
                 .description("I love this")
+                .imageUrl("robotics.jpg")
                 .build();
 
         when(departmentRepository.findAll()).thenReturn(List.of(entity));
@@ -71,5 +74,6 @@ public class DepartmentServiceTest {
         assertThat(result.get(0).getName()).isEqualTo("Robotics");
         assertThat(result.get(0).getSlug()).isEqualTo("robotics");
         assertThat(result.get(0).getTagline()).isEqualTo("Engineer The Impossible");
+        assertThat(result.get(0).getImageUrl()).isEqualTo("robotics.jpg");
     }
 }

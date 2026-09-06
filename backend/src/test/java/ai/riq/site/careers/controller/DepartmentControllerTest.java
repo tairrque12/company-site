@@ -47,6 +47,7 @@ public class DepartmentControllerTest {
                 .slug("robotics")
                 .tagline("Engineer The Impossible")
                 .description("This is Awesome!")
+                .imageUrl("robotics.jpg")
                 .build();
         when(departmentService.getBySlug("robotics")).thenReturn(dto);
 
@@ -56,7 +57,8 @@ public class DepartmentControllerTest {
                 .andExpect(status().isOk())
                 //REACHES INTO JSON OBJECT GET NAME CALLED ROBOTICS AND SLUG robotics
                 .andExpect(jsonPath("$.name").value("Robotics"))
-                .andExpect(jsonPath("$.slug").value("robotics"));
+                .andExpect(jsonPath("$.slug").value("robotics"))
+                .andExpect(jsonPath("$.imageUrl").value("robotics.jpg"));
     }
     @Test
     void shouldReturnAllDepartments() throws Exception{
@@ -66,6 +68,7 @@ public class DepartmentControllerTest {
                 .slug("robotics")
                 .tagline("Engineer The Impossible")
                 .description("This is Awesome!")
+                .imageUrl("robotics.jpg")
                 .build();
 
         //ARRANGE
@@ -81,7 +84,8 @@ public class DepartmentControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 //GO INTO ARRAY AND GRAB AT POSITION 0
                 .andExpect(jsonPath("$[0].name").value("Robotics"))
-                .andExpect(jsonPath("$[0].slug").value("robotics"));
+                .andExpect(jsonPath("$[0].slug").value("robotics"))
+                .andExpect(jsonPath("$[0].imageUrl").value("robotics.jpg"));
     }
 }
 

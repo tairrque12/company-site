@@ -23,6 +23,7 @@ public class DepartmentService {
                 .slug(entity.getSlug())
                 .tagline(entity.getTagline())
                 .description(entity.getDescription())
+                .imageUrl(entity.getImageUrl())
                 .build();
     }
     public List<DepartmentDTO> getAllDepartments(){
@@ -33,6 +34,7 @@ public class DepartmentService {
                         .slug(entity.getSlug())
                         .tagline(entity.getTagline())
                         .description(entity.getDescription())
+                        .imageUrl(entity.getImageUrl())
                         .build())
                 .toList();
 

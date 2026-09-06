@@ -23,6 +23,9 @@ public class DepartmentEntity {
     @Column(nullable = false, unique = true)
     private String slug;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     //does not have anything special, no @Colum needed.
     private String tagline;
 

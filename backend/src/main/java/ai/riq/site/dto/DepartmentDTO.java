@@ -21,5 +21,6 @@ public class DepartmentDTO {
     private String slug;
     private String tagline;
     private String description;
+    private String imageUrl;
     private List<TeamDTO> teams;
 }

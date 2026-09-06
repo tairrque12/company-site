@@ -17,9 +17,11 @@ export function CareersPage(){
       <div className={'p-8'}>
         <h1 className={'text text-6xl font-bold mb-2'}>Careers</h1>
         <h2 className={'text text-4xl font-bold mt-12 mb-6'}>Featured Departments</h2>
+          <div className={'grid grid-cols-3 gap-6'}>
         {departments.map((department) => (
             <DepartmentCard key={department.slug} department={department} />
         ))}
+          </div>
       </div>
 
       );

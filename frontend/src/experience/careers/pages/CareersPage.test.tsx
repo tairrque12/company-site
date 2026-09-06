@@ -29,7 +29,8 @@ describe('CareerPage', () => {
                 name: 'Robotics',
                 slug: 'robotics',
                 tagline: 'Engineer The Impossible.',
-                description: 'We develop humanoid robots.'
+                description: 'We develop humanoid robots.',
+                imageUrl: 'robotics.jpg'
             }
         ]);
         renderCareerPage();

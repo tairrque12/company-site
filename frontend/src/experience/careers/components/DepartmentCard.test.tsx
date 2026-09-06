@@ -21,7 +21,8 @@ describe('DepartmentCard', () =>{
         name: 'Robotics',
         slug: 'robotics',
         tagline: 'Engineer The Impossible. Build The Next Generation Of Humanoid Robots',
-        description: 'We Develop & Deploy Humanoid Robots At Scale'
+        description: 'We Develop & Deploy Humanoid Robots At Scale',
+        imageUrl: 'robotics.jpg'
     }
 
     const renderDepartmentCard = () =>{
@@ -51,5 +52,12 @@ describe('DepartmentCard', () =>{
             await screen.findByRole('button', {name: /learn more/i})
         );
         expect(navigate).toHaveBeenCalledWith('/careers/robotics/about');
+    });
+    it('should render the department images', () => {
+        renderDepartmentCard();
+        //CREATE A IMAGE AND SET IT TO ALT (DEPARTMENT NAME)
+        const image = screen.getByRole('img', {name: department.name});
+        //IS THE IMAGE EQUAL TO SRC AND DOES IT MATCH IMAGEURL
+        expect(image).toHaveAttribute('src',  department.imageUrl);
     });
 })
