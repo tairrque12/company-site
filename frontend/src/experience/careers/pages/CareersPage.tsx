@@ -14,9 +14,9 @@ export function CareersPage(){
   }, []);
 
   return(
-      <div>
-        <h1>Careers</h1>
-        <h2>Featured Departments</h2>
+      <div className={'p-8'}>
+        <h1 className={'text text-6xl font-bold mb-2'}>Careers</h1>
+        <h2 className={'text text-4xl font-bold mt-12 mb-6'}>Featured Departments</h2>
         {departments.map((department) => (
             <DepartmentCard key={department.slug} department={department} />
         ))}
