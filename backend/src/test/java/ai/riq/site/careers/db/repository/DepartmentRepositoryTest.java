@@ -35,7 +35,6 @@ public class DepartmentRepositoryTest {
         assertThat(found).isPresent();
         assertThat(found.get()).usingRecursiveComparison().isEqualTo(department);
         //RECURSIVE COMPARISON VERIFIES EACH FIELD ONE BY ONE INSTEAD OF HAVIMG TO DO IT YOURSELF.
-
     }
 
 }

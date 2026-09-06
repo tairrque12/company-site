@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,6 +57,31 @@ public class DepartmentControllerTest {
                 //REACHES INTO JSON OBJECT GET NAME CALLED ROBOTICS AND SLUG robotics
                 .andExpect(jsonPath("$.name").value("Robotics"))
                 .andExpect(jsonPath("$.slug").value("robotics"));
+    }
+    @Test
+    void shouldReturnAllDepartments() throws Exception{
+        //ARRANGE - BUILD FAKE DTO INSTEAD OF ENTITY
+        DepartmentDTO dto = DepartmentDTO.builder()
+                .name("Robotics")
+                .slug("robotics")
+                .tagline("Engineer The Impossible")
+                .description("This is Awesome!")
+                .build();
+
+        //ARRANGE
+        //WRAPS DEPARTMENTS INTO A LIST (GET-ALL)
+        when(departmentService.getAllDepartments()).thenReturn(List.of(dto));
+
+        //ACT - SIMULATE AN EXACT HTTP REQUEST HITTING THIS URL
+        mockMvc.perform(get("/api/careers"))
+                .andExpect(status().isOk())
+                //TEST FOR ARRAY AND NOT A SINGLE OBJECT SINCE RETURNING LIST
+                .andExpect(jsonPath("$").isArray())
+                //CHECKS HOW MANY ITEMS ARE IN ARRAY BASED ON DTO SINCE RETURNING LIST.
+                .andExpect(jsonPath("$.length()").value(1))
+                //GO INTO ARRAY AND GRAB AT POSITION 0
+                .andExpect(jsonPath("$[0].name").value("Robotics"))
+                .andExpect(jsonPath("$[0].slug").value("robotics"));
     }
 }
 

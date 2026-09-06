@@ -9,10 +9,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+
+;
 
 //
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +48,28 @@ public class DepartmentServiceTest {
         //ASSERT - VERIFY DTO FIELDS
         assertThat(result.getName()).isEqualTo("Robotics");
         assertThat(result.getSlug()).isEqualTo("robotics");
+    }
+    @Test
+    void shouldReturnAllDepartmentsAsDtos(){
+        //ARRANGE - BUILD FAKE ENTITY
+        DepartmentEntity entity = DepartmentEntity.builder()
+                .id(1L)
+                .name("Robotics")
+                .slug("robotics")
+                .tagline("Engineer The Impossible")
+                .description("I love this")
+                .build();
 
+        when(departmentRepository.findAll()).thenReturn(List.of(entity));
+
+        //ACT - ACTUALLY CHECKS SERVICE
+        List<DepartmentDTO> result = departmentService.getAllDepartments();
+
+        //ASSERT - VERIFY ITS CORRECT
+        assertThat(result).hasSize(1);
+        //DOES THE CONTENT MATCH
+        assertThat(result.get(0).getName()).isEqualTo("Robotics");
+        assertThat(result.get(0).getSlug()).isEqualTo("robotics");
+        assertThat(result.get(0).getTagline()).isEqualTo("Engineer The Impossible");
     }
 }

@@ -6,6 +6,8 @@ import ai.riq.site.dto.DepartmentDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 //GENERATES A CONSTRUCTOR, PASSES MOCK REPO IN.
 @RequiredArgsConstructor
@@ -23,4 +25,17 @@ public class DepartmentService {
                 .description(entity.getDescription())
                 .build();
     }
+    public List<DepartmentDTO> getAllDepartments(){
+        List<DepartmentEntity> entities = departmentRepository.findAll();
+        return entities.stream()
+                .map(entity -> DepartmentDTO.builder()
+                        .name(entity.getName())
+                        .slug(entity.getSlug())
+                        .tagline(entity.getTagline())
+                        .description(entity.getDescription())
+                        .build())
+                .toList();
+
+    }
+
 }
