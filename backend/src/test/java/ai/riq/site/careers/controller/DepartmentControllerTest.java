@@ -2,6 +2,7 @@ package ai.riq.site.careers.controller;
 
 import ai.riq.site.careers.service.DepartmentService;
 import ai.riq.site.dto.DepartmentDTO;
+import ai.riq.site.dto.TeamDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,6 +29,8 @@ public class DepartmentControllerTest {
 
     @InjectMocks
     DepartmentController departmentController;
+
+
 
     //CONVERTS JAVA OBJECTS INTO JSON- NEEDED TO ACCEPT DATA
     ObjectMapper objectMapper = new ObjectMapper();
@@ -86,6 +90,28 @@ public class DepartmentControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Robotics"))
                 .andExpect(jsonPath("$[0].slug").value("robotics"))
                 .andExpect(jsonPath("$[0].imageUrl").value("robotics.jpg"));
+    }
+    @Test
+    void shouldReturnTeamWhenDepartmentExists() throws Exception{
+        TeamDTO team = TeamDTO.builder()
+                .name("Test Team")
+                .slug("test-team")
+                .build();
+
+        DepartmentDTO dto = DepartmentDTO.builder()
+                .name("Robotics")
+                .slug("robotics")
+                .tagline("Engineer The Impossible")
+                .description("This is Awesome!")
+                .imageUrl("robotics.jpg")
+                .teams(List.of(team))
+                .build();
+        when(departmentService.getBySlug("robotics")).thenReturn(dto);
+
+        mockMvc.perform(get("/api/careers/robotics"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teams", hasSize(1)))
+                .andExpect(jsonPath("$.teams[0].name").value("Test Team"));
     }
 }
 
