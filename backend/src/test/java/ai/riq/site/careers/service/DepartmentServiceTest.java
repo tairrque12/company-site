@@ -1,16 +1,20 @@
 package ai.riq.site.careers.service;
 
 import ai.riq.site.careers.db.entity.DepartmentEntity;
+import ai.riq.site.careers.db.entity.JobPostingEntity;
 import ai.riq.site.careers.db.entity.TeamEntity;
 import ai.riq.site.careers.db.repository.DepartmentRepository;
+import ai.riq.site.careers.db.repository.JobPostingRepository;
 import ai.riq.site.careers.db.repository.TeamRepository;
 import ai.riq.site.dto.DepartmentDTO;
+import ai.riq.site.dto.JobPostingSummaryDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +30,9 @@ public class DepartmentServiceTest {
 
     @Mock
     TeamRepository teamRepository;
+
+    @Mock
+    JobPostingRepository jobPostingRepository;
 
     //CREATES A REAL SERVICE - THE CLASS I AM ACTUALLY TESTING
     @InjectMocks
@@ -96,6 +103,7 @@ public class DepartmentServiceTest {
 
         //ARRANGE
         TeamEntity team = TeamEntity.builder()
+                .id(1L)
                 .department(department)
                 .name("AI & Robotics")
                 .slug("ai-robotics")
@@ -112,5 +120,50 @@ public class DepartmentServiceTest {
         assertThat(result.getTeams()).isNotNull();
         assertThat(result.getTeams()).hasSize(1);
         assertThat(result.getTeams().get(0).getName()).isEqualTo("AI & Robotics");
+    }
+    @Test
+    void shouldReturnTeamWithJobPostingsWhenSlugExist(){
+        //ARRANGE
+        DepartmentEntity department = DepartmentEntity.builder()
+                .id(1L)
+                .name("Robotics")
+                .slug("robotics")
+                .tagline("Engineer The Impossible")
+                .description("I love this")
+                .imageUrl("robotics.jpg")
+                .build();
+        when(departmentRepository.findBySlug("robotics")).thenReturn(Optional.of(department));
+
+        //ARRANGE
+        TeamEntity team = TeamEntity.builder()
+                .id(1L)
+                .department(department)
+                .name("AI & Robotics")
+                .slug("ai-robotics")
+                .build();
+        when(teamRepository.findByDepartmentId(department.getId())).thenReturn(List.of(team));
+
+        //ARRANGE
+        JobPostingEntity jobPosting = JobPostingEntity.builder()
+                .id(1L)
+                .team(team)
+                .title("Test Engineer")
+                .location("Austin Texas")
+                .jobType("Full-Time")
+                .remote(false)
+                .reqID("TEST-001")
+                .active(true)
+                .postedAt(Instant.now())
+                .build();
+        when(jobPostingRepository.findByTeamId(jobPosting.getId())).thenReturn(List.of(jobPosting));
+
+        //ACT
+        DepartmentDTO result = departmentService.getBySlug("robotics");
+
+        //ASSERT
+        assertThat(result.getTeams().get(0).getJobPostings()).isNotNull();
+        assertThat(result.getTeams().get(0).getJobPostings()).hasSize(1);
+        assertThat(result.getTeams().get(0).getJobPostings().get(0).getTitle()).isEqualTo("Test Engineer");
+
     }
 }

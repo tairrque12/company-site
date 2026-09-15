@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import type {Department} from "@/experience/careers/types/department.ts";
+import type {DepartmentSummary} from "@/experience/careers/types/department.ts";
 import {getAllDepartments} from "@/experience/careers/clients/CareersClient.ts";
 import {DepartmentCard} from "@/experience/careers/components/DepartmentCard.tsx";
 import {CareersHeroVideo} from "@/experience/careers/components/CareersHeroVideo.tsx";
@@ -9,7 +9,7 @@ import {CareersHeroVideo} from "@/experience/careers/components/CareersHeroVideo
 
 
 export function CareersPage() {
-    const [departments, setDepartments] = useState<Department[]>([]);
+    const [departments, setDepartments] = useState<DepartmentSummary[]>([]);
 
     useEffect(() => {
         getAllDepartments().then(setDepartments);

@@ -2,6 +2,7 @@ package ai.riq.site.careers.controller;
 
 import ai.riq.site.careers.service.DepartmentService;
 import ai.riq.site.dto.DepartmentDTO;
+import ai.riq.site.dto.JobPostingSummaryDTO;
 import ai.riq.site.dto.TeamDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,6 +113,37 @@ public class DepartmentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.teams", hasSize(1)))
                 .andExpect(jsonPath("$.teams[0].name").value("Test Team"));
+    }
+    @Test
+    void shouldReturnJobPostingsWhenSlugExists() throws Exception {
+        JobPostingSummaryDTO jobSummary = JobPostingSummaryDTO.builder()
+                .id(1L)
+                .title("AI Engineer")
+                .location("Austin, Texas")
+                .remote(true)
+                .build();
+
+        TeamDTO team = TeamDTO.builder()
+                .name("AI & Robotics")
+                .slug("ai-robotics")
+                .jobPostings(List.of(jobSummary))
+                .build();
+
+        DepartmentDTO dto = DepartmentDTO.builder()
+                .name("Robotics")
+                .slug("robotics")
+                .tagline("Engineer The Impossible")
+                .description("I love this")
+                .imageUrl("robotics.jpg")
+                .teams(List.of(team))
+                .build();
+
+        when(departmentService.getBySlug("robotics")).thenReturn(dto);
+
+        mockMvc.perform(get("/api/careers/robotics"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teams[0].jobPostings", hasSize(1)))
+                .andExpect(jsonPath("$.teams[0].jobPostings[0].title").value("AI Engineer"));
     }
 }
 

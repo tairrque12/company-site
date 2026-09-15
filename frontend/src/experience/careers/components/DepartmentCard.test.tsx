@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, vi,} from "vitest";
-import type {Department} from "@/experience/careers/types/department.ts";
+import type {DepartmentSummary} from "@/experience/careers/types/department.ts";
 import {render, screen} from "@testing-library/react";
 import {DepartmentCard} from "@/experience/careers/components/DepartmentCard.tsx";
 import {MemoryRouter} from "react-router";
@@ -17,7 +17,7 @@ vi.mock("react-router", async (importOriginal) => {
 
 
 describe('DepartmentCard', () =>{
-    const department: Department = {
+    const department: DepartmentSummary = {
         name: 'Robotics',
         slug: 'robotics',
         tagline: 'Engineer The Impossible. Build The Next Generation Of Humanoid Robots',

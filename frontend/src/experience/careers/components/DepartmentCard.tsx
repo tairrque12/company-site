@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router";
-import type { Department } from "@/experience/careers/types/department";
+import type { DepartmentSummary } from "@/experience/careers/types/department";
 import { Button } from "@/components/ui/button";
 
 interface DepartmentCardProps {
-    department: Department;
+    department: DepartmentSummary;
 }
 
 export function DepartmentCard({ department }: DepartmentCardProps) {
