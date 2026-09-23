@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router";
-import { DepartmentPage } from "@/experience/careers/pages/DepartmentPage";
+import {render, screen, within} from "@testing-library/react";
+import {MemoryRouter, Route, Routes} from "react-router";
+import {DepartmentPage} from "@/experience/careers/pages/DepartmentPage";
 import * as CareersClient from "@/experience/careers/clients/CareersClient";
-import type { DepartmentDetail } from "@/experience/careers/types/department";
+import type {DepartmentDetail} from "@/experience/careers/types/department";
 import {expect, it, vi} from "vitest";
+import userEvent from "@testing-library/user-event";
 
 const department: DepartmentDetail = {
     name: "Robotics",
@@ -49,7 +50,6 @@ describe("DepartmentPage", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
-
     it('should render Department Name',async () => {
         vi.spyOn(CareersClient, "getDepartmentBySlug").mockResolvedValue(department);
         renderDepartmentPage();
@@ -78,4 +78,18 @@ describe("DepartmentPage", () => {
         await screen.findByText("AI & Robotics");
         expect(screen.queryByText("AI Engineer")).not.toBeInTheDocument();
     });
+    it('should provide an apply link for a job posting', async () => {
+        vi.spyOn(CareersClient, "getDepartmentBySlug").mockResolvedValue(departmentTeams)
+        renderDepartmentPage();
+        const teamTrigger = await screen.findByRole('button', {name:/AI & ROBOTICS/i})
+        await userEvent.click(teamTrigger);
+        // OPEN THE TEAM - FIND AI ENGINEER.
+        const jobTitle = screen.getByText('AI Engineer');
+        // FIND AI ENGINEER'S ROW
+        const jobRow = jobTitle.closest('div')
+        // SEARCH ONLY INSIDE THAT ROW AND FIND ITS APPLY LINK
+        const applyLink = within(jobRow!).getByRole('link', {name:/apply/i})
+        expect(applyLink).toHaveAttribute('href', '/careers/robotics/jobs/1/apply')
+    });
+
 });

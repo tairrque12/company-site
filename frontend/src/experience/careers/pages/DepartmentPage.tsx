@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {useParams} from "react-router";
+import {Link, useParams} from "react-router";
 import {getDepartmentBySlug} from "@/experience/careers/clients/CareersClient";
 import type {DepartmentDetail} from "@/experience/careers/types/department";
 import {Accordion, AccordionItem, AccordionTrigger, AccordionContent} from "@/components/ui/accordion";
@@ -26,6 +26,7 @@ export function DepartmentPage() {
             <Accordion type="single" collapsible className="w-full max-w-4xl">
                 {department.teams.map((team) => (
                     <AccordionItem key={team.slug} value={team.slug} className="border-b">
+
                         <AccordionTrigger className="text-2xl font-normal py-6 hover:no-underline">
                             <span className="flex w-full justify-between items-center pr-4">
                                 <span>{team.name}</span>
@@ -34,12 +35,13 @@ export function DepartmentPage() {
                                 </span>
                             </span>
                         </AccordionTrigger>
+
                         <AccordionContent>
                             {team.jobPostings.map((posting) => (
                                 <div key={posting.id} className="flex justify-between items-center py-3 pl-4">
                                     <span className="font-medium">{posting.title}</span>
                                     <span className="text-muted-foreground">{posting.location}</span>
-                                    <span className="underline">Apply</span>
+                                    <Link to={`/careers/robotics/jobs/${posting.id}/apply`} className="underline">Apply</Link>
                                 </div>
                             ))}
                         </AccordionContent>
