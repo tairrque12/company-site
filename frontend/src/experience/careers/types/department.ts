@@ -24,3 +24,7 @@ export interface DepartmentSummary {
 export interface DepartmentDetail extends DepartmentSummary {
     teams: Team[];
 }
+
+export interface JobPostingDetail extends JobPosting{
+    aboutRole: string;
+}

@@ -18,9 +18,12 @@ public class JobPostingService {
                 .title(entity.getTitle())
                 .location(entity.getLocation())
                 .aboutRole(entity.getAboutRole())
+                .responsibilities(entity.getResponsibilities())
+                .requirements(entity.getRequirements())
+                .bonusQualifications(entity.getBonusQualifications())
+                .salaryMin(entity.getSalaryMinimum())
+                .salaryMax(entity.getSalaryMax())
                 .build();
-
-
 
     }
 }
