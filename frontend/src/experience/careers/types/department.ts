@@ -1,3 +1,4 @@
+//SMALL SUMMARY FOR DEPARTMENT PAGE
 export interface JobPosting {
     id: number;
     title: string;
@@ -25,6 +26,19 @@ export interface DepartmentDetail extends DepartmentSummary {
     teams: Team[];
 }
 
-export interface JobPostingDetail extends JobPosting{
-    aboutRole: string;
+//FULL JOB POSTING DETAIL
+export interface JobPostingDetail{
+        id: number;
+        title: string;
+        location: string;
+        jobType: string;
+        reqId: string;
+        aboutRole: string;
+        responsibilities: string;
+        requirements: string;
+        bonusQualifications: string;
+        salaryMin: number;
+        salaryMax: number;
+        teamName: string;
+        departmentName: string;
 }

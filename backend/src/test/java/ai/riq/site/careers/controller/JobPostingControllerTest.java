@@ -41,6 +41,11 @@ public class JobPostingControllerTest {
                 .title("AI Engineer")
                 .location("Austin, Texas")
                 .aboutRole("I love the role")
+                .responsibilities("Love your job")
+                .requirements("Genuine motivation to work on safety problems you care about why this work matters.")
+                .bonusQualifications("Background in CSAM detection, integrity engineering, or platform abuse.")
+                .salaryMin(15000)
+                .salaryMax(300000)
                 .build();
 
         //WHEN THE CONTROLLER REQUEST JOB ID 1, RETURN IT'S KNOWN DTO.
@@ -52,7 +57,14 @@ public class JobPostingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("AI Engineer"))
                 .andExpect(jsonPath("$.location").value("Austin, Texas"))
-                .andExpect(jsonPath("$.aboutRole").value("I love the role"));
+                .andExpect(jsonPath("$.aboutRole").value("I love the role"))
+                .andExpect(jsonPath("$.responsibilities").value("Love your job"))
+                .andExpect(jsonPath("$.requirements").value("Genuine motivation to work on safety problems you care about why this work matters."))
+                .andExpect(jsonPath("$.bonusQualifications").value("Background in CSAM detection, integrity engineering, or platform abuse."))
+                .andExpect(jsonPath("$.salaryMin").value(15000))
+                .andExpect(jsonPath("$.salaryMax").value(300000));
+
+
     }
 
 }

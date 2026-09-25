@@ -3,9 +3,10 @@ package ai.riq.site.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 //FULL JD DTO
-
+@Setter
 @Getter
 @Builder
 public class JobPostingsDetailDTO {

@@ -1,6 +1,6 @@
 //THIS FILE GOES AND GET EVERY DEPARTMENT FROM THE BACKEND
 
-import type {DepartmentDetail, DepartmentSummary} from "@/experience/careers/types/department";
+import type {DepartmentDetail, DepartmentSummary, JobPostingDetail} from "@/experience/careers/types/department";
 
 //Promise - means it will hand back list of departments eventually.
 export async function getAllDepartments(): Promise<DepartmentSummary[]> {
@@ -12,5 +12,9 @@ export async function getAllDepartments(): Promise<DepartmentSummary[]> {
 }
 export async function getDepartmentBySlug(slug: string): Promise<DepartmentDetail> {
     const response = await fetch(`/api/careers/${slug}`);
+    return response.json();
+}
+export async function getJobPostingById(id: number): Promise<JobPostingDetail> {
+    const response = await fetch(`/api/careers/jobs/${id}`);
     return response.json();
 }

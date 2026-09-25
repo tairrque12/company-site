@@ -44,6 +44,8 @@ public class JobPostingServiceTest {
 
         //ACT
         JobPostingsDetailDTO result = jobPostingService.getById(1L);
+        result.setId(2L);
+
 
         //ASSERT
         assertThat(result.getId()).isEqualTo(1L);
@@ -55,5 +57,7 @@ public class JobPostingServiceTest {
         assertThat(result.getRequirements()).isEqualTo("Genuine motivation to work on safety problems you care about why this work matters.");
         assertThat(result.getSalaryMin()).isEqualTo(150000);
         assertThat(result.getSalaryMax()).isEqualTo(300000);
+        assertThat(result).usingRecursiveComparison().ignoringFields("teamName", "departmentName", "reqId", "salaryMin").isEqualTo(entity);
+        System.out.println("Ran Job posting service test.....");
     }
 }

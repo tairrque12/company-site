@@ -29,7 +29,8 @@ describe('DepartmentCard', () =>{
         render(<DepartmentCard department={department}/>, {wrapper: MemoryRouter})
     }
 
-    beforeEach(() => navigate.mockClear());
+
+    beforeEach(() => vi.clearAllMocks());
 
     it('should render the department name', () => {
         renderDepartmentCard();
