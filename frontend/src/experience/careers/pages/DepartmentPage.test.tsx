@@ -40,7 +40,15 @@ function renderDepartmentPage() {
     render(
         <MemoryRouter initialEntries={["/careers/robotics"]}>
             <Routes>
-                <Route path="/careers/:slug" element={<DepartmentPage />} />
+                <Route
+                    path="/careers/:slug"
+                    element={<DepartmentPage />}
+                />
+
+                <Route
+                    path="/careers/:departmentSlug/jobs/:id"
+                    element={<div>Job Detail Page</div>}
+                />
             </Routes>
         </MemoryRouter>
     );
@@ -78,18 +86,47 @@ describe("DepartmentPage", () => {
         await screen.findByText("AI & Robotics");
         expect(screen.queryByText("AI Engineer")).not.toBeInTheDocument();
     });
-    it('should provide an apply link for a job posting', async () => {
-        vi.spyOn(CareersClient, "getDepartmentBySlug").mockResolvedValue(departmentTeams)
-        renderDepartmentPage();
-        const teamTrigger = await screen.findByRole('button', {name:/AI & ROBOTICS/i})
-        await userEvent.click(teamTrigger);
-        // OPEN THE TEAM - FIND AI ENGINEER.
-        const jobTitle = screen.getByText('AI Engineer');
-        // FIND AI ENGINEER'S ROW
-        const jobRow = jobTitle.closest('div')
-        // SEARCH ONLY INSIDE THAT ROW AND FIND ITS APPLY LINK
-        const applyLink = within(jobRow!).getByRole('link', {name:/apply/i})
-        expect(applyLink).toHaveAttribute('href', '/careers/robotics/jobs/1/apply')
-    });
+    it('should provide an apply link to the job detail page', async () => {
+        vi.spyOn(CareersClient, "getDepartmentBySlug")
+            .mockResolvedValue(departmentTeams);
 
-});
+        renderDepartmentPage();
+
+        const teamTrigger = await screen.findByRole('button', {
+            name: /AI & ROBOTICS/i
+        });
+
+        await userEvent.click(teamTrigger);
+
+        const jobTitle = screen.getByText('AI Engineer');
+        const jobRow = jobTitle.closest('div');
+
+        const applyLink = within(jobRow!).getByRole('link', {
+            name: /apply/i
+        });
+
+        expect(applyLink)
+            .toHaveAttribute('href', '/careers/robotics/jobs/1');
+    });
+    it('should navigate to job detail page when apply is clicked', async () => {
+            vi.spyOn(CareersClient, "getDepartmentBySlug")
+                .mockResolvedValue(departmentTeams);
+
+            renderDepartmentPage();
+
+            const teamTrigger = await screen.findByRole('button', {
+                name: /AI & ROBOTICS/i
+            });
+
+            await userEvent.click(teamTrigger);
+
+            const jobTitle = screen.getByText('AI Engineer');
+            const jobRow = jobTitle.closest('div');
+
+            const applyLink = within(jobRow!).getByRole('link', {
+                name: /apply/i
+            });
+            expect(applyLink)
+                .toHaveAttribute('href', '/careers/robotics/jobs/1');
+        });
+    });

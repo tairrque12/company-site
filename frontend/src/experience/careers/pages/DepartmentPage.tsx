@@ -41,7 +41,12 @@ export function DepartmentPage() {
                                 <div key={posting.id} className="flex justify-between items-center py-3 pl-4">
                                     <span className="font-medium">{posting.title}</span>
                                     <span className="text-muted-foreground">{posting.location}</span>
-                                    <Link to={`/careers/robotics/jobs/${posting.id}/apply`} className="underline">Apply</Link>
+                                    <Link
+                                        to={`/careers/${slug}/jobs/${posting.id}`}
+                                        className="underline"
+                                    >
+                                        Apply
+                                    </Link>
                                 </div>
                             ))}
                         </AccordionContent>
