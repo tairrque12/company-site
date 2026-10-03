@@ -42,3 +42,25 @@ export interface JobPostingDetail{
         teamName: string;
         departmentName: string;
 }
+//WHAT THE USER SUBMITS
+export interface JobApplicationRequest{
+    jobPostingId: number;
+    firstName: string;
+    lastName: string;
+    preferredFirstName: string;
+    email: string;
+    country: string;
+    phone: string;
+    city: string;
+    linkedinUrl?: string;
+    websiteUrl?: string;
+}
+//CONFIRMATION TO USER IT HAS SUBMITTED
+export interface JobApplicationResponse{
+    id: number;
+    firstName: string;
+    lastName: string;
+    jobPostingTitle: string;
+    departmentName: string | null;
+    submittedAt: string;
+}

@@ -1,3 +1,4 @@
+
 package ai.riq.site.careers.db.entity;
 
 import jakarta.persistence.*;
@@ -18,10 +19,9 @@ public class JobApplicationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // An application belongs to an existing job posting.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_posting_id", nullable = false)
-    //A job application has a job posting.
-    // The join column will tell you where to point.
     private JobPostingEntity jobPostingEntity;
 
     @Column(name = "first_name", nullable = false)
@@ -45,7 +45,8 @@ public class JobApplicationEntity {
     @Column(nullable = false)
     private String city;
 
-    @Column(name = "resume_path", nullable = false)
+    // Temporarily optional until resume upload is implemented.
+    @Column(name = "resume_path")
     private String resumePath;
 
     @Column(name = "linkedin_url")
@@ -54,7 +55,7 @@ public class JobApplicationEntity {
     @Column(name = "website_url")
     private String websiteUrl;
 
+    // The backend controls when the application was submitted.
     @Column(name = "submitted_at", nullable = false)
     private Instant submittedAt;
-
 }
