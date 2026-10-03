@@ -8,6 +8,9 @@ import {yupResolver} from "@hookform/resolvers/yup";
     const schema = yup.object({
         firstName: yup.string().required("First Name Is Required"),
         lastName: yup.string().required("Last Name Is Required"),
+        email: yup.string()
+            .email('Please Enter A Valid Email')
+            .required('Email Is Required'),
     })
 
     //DEFINE STRUCTURE OF FORM VALUES
@@ -76,8 +79,11 @@ import {yupResolver} from "@hookform/resolvers/yup";
                 <input
                     id={'email'}
                     type={'text'}
-                    name={'email'}
+                    {...register('email')}
                 />
+                {errors.email && (
+                    <p role={'alert'}>{errors.email.message}</p>
+                )}
             </div>
 
             <div>

@@ -5,8 +5,8 @@ import userEvent from "@testing-library/user-event";
 
 describe('JobApplicationForm', () => {
     it('should render job app heading ', () => {
-       render(<JobApplicationForm/>);
-       expect(screen.getByRole('heading', {name:/apply for this job/i})).toBeInTheDocument()
+        render(<JobApplicationForm/>);
+        expect(screen.getByRole('heading', {name: /apply for this job/i})).toBeInTheDocument()
     });
     it('should render form input fields', () => {
         render(<JobApplicationForm/>)
@@ -27,14 +27,31 @@ describe('JobApplicationForm', () => {
         await user.type(firstNameInput, "Tairrque");
         expect(firstNameInput).toHaveValue("Tairrque")
     });
-    it('should show validation errors when required fields are empty', async () => {
-        //THIS IS SETTING UP USER
-        const user = userEvent.setup();
+    it('should show validation errors when input fields are empty', async () => {
         render(<JobApplicationForm/>)
-        //USER CLICKING BUTTON WITHOUT SUBMITTING INFORMATION
+        const user = userEvent.setup();
+
         await user.click(screen.getByRole('button', {name:/submit application/i}))
-        //FIND BY TEXT - WAITING FOR VALIDATION TO APPEAR
-        expect(await screen.findByText('First Name Is Required')).toBeInTheDocument();
-        expect(await screen.findByText('Last Name Is Required')).toBeInTheDocument();
+        expect(await screen.findByText('First Name Is Required')).toBeInTheDocument()
+        expect(await screen.findByText('Last Name Is Required')).toBeInTheDocument()
     });
 });
+    it('should show validation error when email format is incorrect', async () => {
+        //ARRANGE
+        render(<JobApplicationForm/>)
+        //THIS IS SETTING UP USER
+        const user = userEvent.setup();
+        const firstNameInput = screen.getByLabelText('First Name')
+        const lastNameInput = screen.getByLabelText('Last Name')
+        const emailInput = screen.getByLabelText('Email')
+
+        //ACT
+        await user.type(firstNameInput, 'Tairrque')
+        await user.type(lastNameInput, 'Baker')
+
+        await user.type(emailInput, 'notAnEmail')
+        await user.click(screen.getByRole('button', {name: /submit application/i}))
+
+        //ASSERT
+        expect(await screen.findByText('Please Enter A Valid Email')).toBeInTheDocument();
+    });
