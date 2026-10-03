@@ -1,14 +1,18 @@
 package ai.riq.site.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 // REQUEST DTO - A CONTAINER FOR THE INFORMATION THE USER SUBMITTED.
 // THE BROWSER SENDS JSON, THE BACKEND TURNS IT INTO A JOB REQUEST DTO.
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class JobApplicationRequestDTO {
+
     private Long jobPostingId;
     private String firstName;
     private String lastName;
@@ -19,6 +23,7 @@ public class JobApplicationRequestDTO {
     private String city;
     private String linkedinUrl;
     private String websiteUrl;
-
 }
-// NO ID, RESUME-PATH OR SUBMITTED AT, SERVER CONTROLS ALL 3
+
+// NO ID, RESUME PATH OR SUBMITTED AT.
+// THE SERVER CONTROLS ALL THREE.
