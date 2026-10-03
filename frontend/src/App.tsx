@@ -5,8 +5,11 @@ import {Navbar} from "@/experience/careers/components/Navbar.tsx";
 import {JobDetailPage} from "@/experience/careers/pages/JobDetailPage.tsx";
 
 function App() {
+
     return (
-        <Routes>
+        <>
+        <Navbar/>
+        <Routes className ='pt-40'>
             <Route path="/careers" element={<CareersPage />} />
 
             <Route
@@ -21,6 +24,7 @@ function App() {
 
             <Route path="/navbar" element={<Navbar />} />
         </Routes>
+        </>
     );
 }
 

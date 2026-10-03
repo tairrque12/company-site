@@ -2,18 +2,16 @@ package ai.riq.site.careers.service;
 
 import ai.riq.site.careers.db.entity.JobPostingEntity;
 import ai.riq.site.careers.db.repository.JobPostingRepository;
-import ai.riq.site.dto.JobPostingSummaryDTO;
 import ai.riq.site.dto.JobPostingsDetailDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)

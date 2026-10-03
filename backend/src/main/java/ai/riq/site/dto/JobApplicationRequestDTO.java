@@ -3,7 +3,8 @@ package ai.riq.site.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-//REQUEST DTO = CLIENT PROVIDES THIS INFO.
+// REQUEST DTO - A CONTAINER FOR THE INFORMATION THE USER SUBMITTED.
+// THE BROWSER SENDS JSON, THE BACKEND TURNS IT INTO A JOB REQUEST DTO.
 
 @Getter
 @Builder
