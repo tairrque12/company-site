@@ -72,5 +72,33 @@ it('should submit a job application and return its response', async () => {
     );
     // ASSERT - Verify the returned data
     expect(actualResponse).toEqual(expectedResponse);
+});
+
+it("should throw an error when submitting an application fails", async () => {
+    // ARRANGE - Applicant information
+    const request: JobApplicationRequest = {
+        jobPostingId: 1,
+        firstName: "Tairrque",
+        lastName: "Baker",
+        preferredFirstName: "Tairrque",
+        email: "test@example.com",
+        country: "United States",
+        phone: "555-0100",
+        city: "Austin",
+        linkedinUrl: "https://linkedin.com/in/tairrque",
+        websiteUrl: "https://example.com"
+    };
+
+    // ARRANGE - Simulate an unsuccessful backend response
+    globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500
+    });
+
+    // ACT + ASSERT
+    await expect(
+        createJobApplication(request)
+    ).rejects.toThrow("Failed to submit job application");
 
 });
+
