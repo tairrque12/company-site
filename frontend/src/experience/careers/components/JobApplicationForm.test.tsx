@@ -1,57 +1,214 @@
-import {render, screen} from "@testing-library/react";
-import {JobApplicationForm} from "@/experience/careers/components/JobApplicationForm.tsx";
-import {expect} from "vitest";
-import userEvent from "@testing-library/user-event";
 
-describe('JobApplicationForm', () => {
-    it('should render job app heading ', () => {
-        render(<JobApplicationForm/>);
-        expect(screen.getByRole('heading', {name: /apply for this job/i})).toBeInTheDocument()
+import {render, screen, waitFor} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import {afterEach, describe, expect, it, vi} from "vitest";
+
+import {JobApplicationForm} from "./JobApplicationForm";
+import {createJobApplication} from "../clients/CareersClient";
+
+// Mock the API client so tests do not make real HTTP requests.
+vi.mock("../clients/CareersClient", () => ({
+    createJobApplication: vi.fn()
+}));
+
+// Reusable helper for rendering the form with a job posting ID.
+const renderJobApplicationForm = (jobPostingId: number = 5) => {
+    return render(
+        <JobApplicationForm jobPostingId={jobPostingId} />
+    );
+};
+
+// Clear recorded mock calls between tests.
+afterEach(() => {
+    vi.clearAllMocks();
+});
+
+describe("JobApplicationForm", () => {
+
+    // TEST 1: Form heading
+    it("should render job app heading", () => {
+        renderJobApplicationForm();
+        expect(
+            screen.getByRole("heading", {
+                name: /apply for this job/i
+            })
+        ).toBeInTheDocument();
     });
-    it('should render form input fields', () => {
-        render(<JobApplicationForm/>)
-        expect(screen.getByLabelText('First Name')).toBeInTheDocument()
-        expect(screen.getByLabelText('Last Name')).toBeInTheDocument()
-        expect(screen.getByLabelText('Preferred First Name')).toBeInTheDocument()
-        expect(screen.getByLabelText('Email')).toBeInTheDocument()
-        expect(screen.getByLabelText('Country')).toBeInTheDocument()
-        expect(screen.getByLabelText('Phone')).toBeInTheDocument()
-        expect(screen.getByLabelText('City')).toBeInTheDocument()
-        expect(screen.getByLabelText('Linkedin Url')).toBeInTheDocument()
-        expect(screen.getByLabelText('Website Url')).toBeInTheDocument()
+    // TEST 2: Form fields
+    it("should render form input fields", () => {
+        renderJobApplicationForm();
+        expect(screen.getByLabelText("First Name")).toBeInTheDocument();
+        expect(screen.getByLabelText("Last Name")).toBeInTheDocument();
+        expect(screen.getByLabelText("Preferred First Name")).toBeInTheDocument();
+        expect(screen.getByLabelText("Email")).toBeInTheDocument();
+        expect(screen.getByLabelText("Country")).toBeInTheDocument();
+        expect(screen.getByLabelText("Phone")).toBeInTheDocument();
+        expect(screen.getByLabelText("City")).toBeInTheDocument();
+        expect(screen.getByLabelText("Linkedin Url")).toBeInTheDocument();
+        expect(screen.getByLabelText("Website Url")).toBeInTheDocument();
     });
-    it('should allow a user to type their information', async () => {
-        render(<JobApplicationForm/>)
-        const user = userEvent.setup()
-        const firstNameInput = screen.getByLabelText('First Name');
+    // TEST 3: Typing into the form
+    it("should allow a user to type their information", async () => {
+        // ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        const firstNameInput = screen.getByLabelText("First Name");
+        // ACT
         await user.type(firstNameInput, "Tairrque");
-        expect(firstNameInput).toHaveValue("Tairrque")
+        // ASSERT
+        expect(firstNameInput).toHaveValue("Tairrque");
     });
-    it('should show validation errors when input fields are empty', async () => {
-        render(<JobApplicationForm/>)
+    // TEST 4: Required field validation
+    it("should show validation errors when input fields are empty", async () => {
+        // ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        // ACT
+        await user.click(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        );
+        // ASSERT
+        expect(
+            await screen.findByText("First Name Is Required")
+        ).toBeInTheDocument();
+        expect(screen.getByText("Last Name Is Required")).toBeInTheDocument();
+        expect(screen.getByText("Email Is Required")).toBeInTheDocument();
+        expect(screen.getByText("Country Is Required")).toBeInTheDocument();
+        expect(screen.getByText("Phone Is Required")).toBeInTheDocument();
+        expect(screen.getByText("City Is Required")).toBeInTheDocument();
+    });
+    // TEST 5: Invalid email validation
+    it("should show validation error when email format is incorrect", async () => {
+        // ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        // ACT
+        await user.type(screen.getByLabelText("First Name"), "Tairrque");
+        await user.type(screen.getByLabelText("Last Name"), "Baker");
+        await user.type(screen.getByLabelText("Email"), "notAnEmail");
+        await user.click(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        );
+        // ASSERT
+        expect(
+            await screen.findByText("Please Enter A Valid Email")
+        ).toBeInTheDocument();
+    });
+    // TEST 6: Correct application request
+    it("should submit an application for the selected job", async () => {
+        // ARRANGE
         const user = userEvent.setup();
 
-        await user.click(screen.getByRole('button', {name:/submit application/i}))
-        expect(await screen.findByText('First Name Is Required')).toBeInTheDocument()
-        expect(await screen.findByText('Last Name Is Required')).toBeInTheDocument()
+        vi.mocked(createJobApplication).mockResolvedValue({
+            id: 100,
+            firstName: "Tairrque",
+            lastName: "Baker",
+            jobPostingTitle: "Robotics Software Engineer",
+            departmentName: "Engineering",
+            submittedAt: "2026-10-04T13:00:00"
+        });
+
+        renderJobApplicationForm(10);
+        // ACT
+        await user.type(screen.getByLabelText("First Name"), "Tairrque");
+        await user.type(screen.getByLabelText("Last Name"), "Baker");
+        await user.type(screen.getByLabelText("Email"), "test@example.com");
+        await user.type(screen.getByLabelText("Country"), "United States");
+        await user.type(screen.getByLabelText("Phone"), "334-820-9553");
+        await user.type(screen.getByLabelText("City"), "Lanett");
+        await user.click(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        );
+        // ASSERT
+        await waitFor(() => {
+            expect(createJobApplication).toHaveBeenCalledWith({
+                jobPostingId: 10,
+                firstName: "Tairrque",
+                lastName: "Baker",
+                preferredFirstName: "",
+                email: "test@example.com",
+                country: "United States",
+                phone: "334-820-9553",
+                city: "Lanett",
+                linkedinUrl: "",
+                websiteUrl: ""
+            });
+        });
+    });
+
+    // TEST 7: Successful submission
+    it("should display a success message after submitting an application", async () => {
+        // ARRANGE
+        const user = userEvent.setup();
+        vi.mocked(createJobApplication).mockResolvedValue({
+            id: 100,
+            firstName: "Tairrque",
+            lastName: "Baker",
+            jobPostingTitle: "Robotics Software Engineer",
+            departmentName: "Engineering",
+            submittedAt: "2026-10-12T13:00:00"
+        });
+
+        renderJobApplicationForm(10);
+        // ACT
+        await user.type(screen.getByLabelText("First Name"), "Tairrque");
+        await user.type(screen.getByLabelText("Last Name"), "Baker");
+        await user.type(screen.getByLabelText("Email"), "test@example.com");
+        await user.type(screen.getByLabelText("Country"), "United States");
+        await user.type(screen.getByLabelText("Phone"), "334-820-9553");
+        await user.type(screen.getByLabelText("City"), "Lanett");
+
+        await user.click(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        );
+        // ASSERT
+        expect(
+            await screen.findByRole("status")
+        ).toHaveTextContent("Application Submitted Successfully");
+        expect(createJobApplication).toHaveBeenCalledTimes(1);
+    });
+
+    // TEST 8: Failed submission
+    it("should display an error when the application submission fails", async () => {
+        // ARRANGE
+        const user = userEvent.setup();
+
+        vi.mocked(createJobApplication).mockRejectedValue(
+            new Error("Failed to submit job application")
+        );
+
+        renderJobApplicationForm(10);
+        // ACT
+        await user.type(screen.getByLabelText("First Name"), "Tairrque");
+        await user.type(screen.getByLabelText("Last Name"), "Baker");
+        await user.type(screen.getByLabelText("Email"), "test@example.com");
+        await user.type(screen.getByLabelText("Country"), "United States");
+        await user.type(screen.getByLabelText("Phone"), "334-820-9553");
+        await user.type(screen.getByLabelText("City"), "Lanett");
+
+        await user.click(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        );
+        // ASSERT
+        expect(
+            await screen.findByRole("alert")
+        ).toHaveTextContent(
+            "Unable to submit application. Please try again."
+        );
+        expect(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        ).toBeEnabled();
     });
 });
-    it('should show validation error when email format is incorrect', async () => {
-        //ARRANGE
-        render(<JobApplicationForm/>)
-        //THIS IS SETTING UP USER
-        const user = userEvent.setup();
-        const firstNameInput = screen.getByLabelText('First Name')
-        const lastNameInput = screen.getByLabelText('Last Name')
-        const emailInput = screen.getByLabelText('Email')
-
-        //ACT
-        await user.type(firstNameInput, 'Tairrque')
-        await user.type(lastNameInput, 'Baker')
-
-        await user.type(emailInput, 'notAnEmail')
-        await user.click(screen.getByRole('button', {name: /submit application/i}))
-
-        //ASSERT
-        expect(await screen.findByText('Please Enter A Valid Email')).toBeInTheDocument();
-    });

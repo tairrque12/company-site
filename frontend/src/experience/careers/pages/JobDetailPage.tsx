@@ -1,44 +1,98 @@
-import {useEffect, useState} from "react";
+
+import {useEffect, useRef, useState} from "react";
+import {Link, useParams} from "react-router";
+
 import {getJobPostingById} from "@/experience/careers/clients/CareersClient";
 import type {JobPostingDetail} from "@/experience/careers/types/department";
-import {useNavigate, useParams, Link} from "react-router";
+import {JobApplicationForm} from "@/experience/careers/components/JobApplicationForm";
 
 export function JobDetailPage() {
-    // WHICH JOB?
     const {id, departmentSlug} = useParams();
-    const navigate = useNavigate();
 
-    // STORE THE JOB
     const [job, setJob] = useState<JobPostingDetail | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState(false);
 
-    // GO GET THE JOB
+    const applicationRef = useRef<HTMLElement>(null);
+
     useEffect(() => {
+        let cancelled = false;
+
+        setLoading(true);
+        setLoadError(false);
+        setJob(null);
+
+        if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) {
+            setLoading(false);
+            setLoadError(true);
+            return;
+        }
+
         getJobPostingById(Number(id))
-            .then((job) => {
-                setJob(job);
+            .then((jobPosting) => {
+                if (!cancelled) {
+                    setJob(jobPosting);
+                    setLoading(false);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setLoadError(true);
+                    setLoading(false);
+                }
             });
+
+        return () => {
+            cancelled = true;
+        };
     }, [id]);
 
-    if (!job) {
-        return <p>Loading...</p>;
+    const handleApply = () => {
+        applicationRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    };
+
+    if (loading) {
+        return (
+            <div className="mx-auto max-w-5xl px-6 py-20">
+                <p className="text-gray-500">Loading job details...</p>
+            </div>
+        );
+    }
+
+    if (loadError || !job) {
+        return (
+            <div className="mx-auto max-w-5xl px-6 py-20">
+                <h1 className="text-2xl font-semibold">
+                    Unable to load this job
+                </h1>
+                <Link
+                    to="/careers"
+                    className="mt-4 inline-block underline"
+                >
+                    Return to careers
+                </Link>
+            </div>
+        );
     }
 
     return (
-        <main className="min-h-screen bg-white text-black">
+        <div className="min-h-screen bg-white text-black">
 
             {/* JOB HEADER */}
             <section className="border-b border-gray-200">
                 <div className="mx-auto max-w-5xl px-6 py-16">
 
-                    {/*BACK TO JOB POSTINGS */}
                     <Link
                         to={`/careers/${departmentSlug}`}
-                        className="inline-flex items-center text-sm font-medium text-gray-600 transition hover:text-black py-4"
+                        className="inline-flex py-4 text-sm font-medium text-gray-600 transition hover:text-black"
                     >
                         ← Back to jobs
                     </Link>
 
-                    <div className="flex items-start justify-between gap-8">
+                    <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
 
                         <div>
                             <h1 className="text-4xl font-semibold tracking-tight">
@@ -51,22 +105,18 @@ export function JobDetailPage() {
                         </div>
 
                         <button
-                            onClick={() =>
-                                navigate(
-                                    `/careers/${departmentSlug}/jobs/${id}/apply`
-                                )
-                            }
-                            className="rounded-full bg-black px-8 py-3 font-medium text-white transition hover:bg-gray-800"
+                            type="button"
+                            onClick={handleApply}
+                            className="shrink-0 rounded-md bg-black px-8 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
                         >
-                            Apply
+                            Apply For This Job
                         </button>
 
                     </div>
                 </div>
             </section>
 
-
-            {/* JOB INFORMATION */}
+            {/* JOB DESCRIPTION */}
             <div className="mx-auto max-w-5xl px-6 py-16">
 
                 <div className="max-w-3xl space-y-14">
@@ -75,45 +125,37 @@ export function JobDetailPage() {
                         <h2 className="mb-4 text-2xl font-semibold">
                             About The Role
                         </h2>
-
-                        <p className="leading-8 text-gray-700">
+                        <p className="whitespace-pre-line leading-8 text-gray-700">
                             {job.aboutRole}
                         </p>
                     </section>
-
 
                     <section>
                         <h2 className="mb-4 text-2xl font-semibold">
                             Responsibilities
                         </h2>
-
-                        <p className="leading-8 text-gray-700">
+                        <p className="whitespace-pre-line leading-8 text-gray-700">
                             {job.responsibilities}
                         </p>
                     </section>
-
 
                     <section>
                         <h2 className="mb-4 text-2xl font-semibold">
                             Requirements
                         </h2>
-
-                        <p className="leading-8 text-gray-700">
+                        <p className="whitespace-pre-line leading-8 text-gray-700">
                             {job.requirements}
                         </p>
                     </section>
-
 
                     <section>
                         <h2 className="mb-4 text-2xl font-semibold">
                             Bonus Qualifications
                         </h2>
-
-                        <p className="leading-8 text-gray-700">
+                        <p className="whitespace-pre-line leading-8 text-gray-700">
                             {job.bonusQualifications}
                         </p>
                     </section>
-
 
                     <section className="border-t border-gray-200 pt-12">
                         <h2 className="mb-4 text-2xl font-semibold">
@@ -127,8 +169,8 @@ export function JobDetailPage() {
                             </p>
 
                             <p>
-                                The pay offered for this position may vary based
-                                on several individual factors, including
+                                The pay offered for this position may vary
+                                based on several individual factors, including
                                 job-related knowledge, skills, and experience.
                             </p>
 
@@ -144,6 +186,22 @@ export function JobDetailPage() {
                 </div>
             </div>
 
-        </main>
+            {/* APPLICATION SECTION - ALWAYS VISIBLE */}
+            <section
+                ref={applicationRef}
+                id="job-application"
+                className="scroll-mt-44 border-t border-gray-200 bg-gray-50"
+            >
+                <div className="mx-auto max-w-5xl px-6 py-20">
+                    <div className="max-w-3xl">
+                        <JobApplicationForm
+                            key={job.id}
+                            jobPostingId={job.id}
+                        />
+                    </div>
+                </div>
+            </section>
+
+        </div>
     );
 }
