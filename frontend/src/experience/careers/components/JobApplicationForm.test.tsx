@@ -238,16 +238,32 @@ describe("JobApplicationForm", () => {
         await user.selectOptions(dropdown, "Company Website")
         //ASSERT
         expect(dropdown).toHaveValue("Company Website")
-
-    });
-    it('should fill the form field with the selected criteria when a criteria is clicked', () => {
-
     });
     it('should save the application with selected criteria when submit is clicked', () => {
 
     });
-    it('should not submit application when referralType is not selected', () => {
-
+    it('should not submit application when referralSource is not selected',async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        //ACT
+        await user.type(
+            screen.getByRole("textbox", { name: /^first name$/i }),
+            "Tairrque"
+        );
+        await user.type(screen.getByLabelText(/last name/i), "Baker");
+        await user.type(screen.getByLabelText(/email/i), "test@example.com");
+        await user.type(screen.getByLabelText(/country/i), "United States");
+        await user.type(screen.getByLabelText(/phone/i), "334-820-9553");
+        await user.type(screen.getByLabelText(/city/i), "Lanett");
+        await user.click(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        );
+        //ASSERT
+        expect(await screen.findByText('Referral Source Is Required')).toBeInTheDocument();
+        expect(createJobApplication).not.toHaveBeenCalled();
     });
     it('should render a success message when application is successfully committed', () => {
 
