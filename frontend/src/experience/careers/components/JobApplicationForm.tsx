@@ -83,6 +83,7 @@ export function JobApplicationForm({
         }
     };
 
+
     if (isSubmitted) {
         return (
             <section
@@ -306,6 +307,25 @@ export function JobApplicationForm({
                                 {errors.city.message}
                             </p>
                         )}
+                    </div>
+
+                    {/*Referral*/}
+                    <div>
+                        <label htmlFor="refferal" className={labelClassName}>
+                            How Did You Hear About Us?
+                        </label>
+
+                        <select
+                        id="refferal"
+                        className={inputClassName}
+                        >
+                            <option value=''>Select An Option</option>
+                            <option value='LinkedIn'>LinkedIn</option>
+                            <option value='Company Website'>Company Website</option>
+                            <option value='Employee Referral'>Employee Referral</option>
+                            <option value='Job Fair'>Job Fair</option>
+                            <option value='Other'>Other</option>
+                    </select>
                     </div>
 
                 </div>

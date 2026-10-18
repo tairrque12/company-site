@@ -1,4 +1,3 @@
-
 import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {afterEach, describe, expect, it, vi} from "vitest";
@@ -14,7 +13,7 @@ vi.mock("../clients/CareersClient", () => ({
 // Reusable helper for rendering the form with a job posting ID.
 const renderJobApplicationForm = (jobPostingId: number = 5) => {
     return render(
-        <JobApplicationForm jobPostingId={jobPostingId} />
+        <JobApplicationForm jobPostingId={jobPostingId}/>
     );
 };
 
@@ -211,4 +210,51 @@ describe("JobApplicationForm", () => {
             })
         ).toBeEnabled();
     });
+    it('should render a form field titled how did you hear about us ', () => {
+        renderJobApplicationForm();
+        expect(screen.getByLabelText('How Did You Hear About Us?')).toBeInTheDocument();
+    });
+    it('should render a dropdown with select criteria', () => {
+        renderJobApplicationForm();
+        const options = screen.getAllByRole('option');
+        expect(screen.getByRole('combobox', {name: /how did you hear about us/i})).toBeInTheDocument();
+        expect(options).toHaveLength(6);
+        expect(screen.getByRole('option', {name: /LinkedIn/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Company Website/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Employee Referral/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Job Fair/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Other/i})).toBeInTheDocument();
+    });
+    it('should display the selected referral source', async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        const dropdown = screen.getByRole('combobox', {name:/how did you hear about us/i})
+        //ACT
+        await user.selectOptions(dropdown, "LinkedIn")
+        //ASSERT
+        expect(dropdown).toHaveValue("LinkedIn");
+        //ACT
+        await user.selectOptions(dropdown, "Company Website")
+        //ASSERT
+        expect(dropdown).toHaveValue("Company Website")
+
+    });
+    it('should fill the form field with the selected criteria when a criteria is clicked', () => {
+
+    });
+    it('should save the application with selected criteria when submit is clicked', () => {
+
+    });
+    it('should not submit application when referralType is not selected', () => {
+
+    });
+    it('should render a success message when application is successfully committed', () => {
+
+    });
+    it('should render a validation error when user does not select a referral type and attempts to submit  ', () => {
+
+    });
+
 });
+
