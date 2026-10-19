@@ -294,13 +294,28 @@ describe("JobApplicationForm", () => {
         expect(await screen.findByText('Referral Source Is Required')).toBeInTheDocument();
         expect(createJobApplication).not.toHaveBeenCalled();
     });
-    it('should render a success message when application is successfully committed', () => {
+    it('should display an error and retain referral when submission fails', async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        vi.mocked(createJobApplication).mockRejectedValue(
+            new Error('Server Error')
+        );
+        renderJobApplicationForm(10);
 
+        //ACT - FILL OUT ALL REQUIRED FIELDS
+        await user.type(screen.getByRole('textbox', {name: /^first name$/i}), "Tairrque")
+        await user.type(screen.getByRole('textbox', {name: /last name/i}), "Baker")
+        await user.type(screen.getByRole('textbox', {name: /^email$/i}), "test@example.com")
+        await user.type(screen.getByRole('textbox', {name: /country/i}), "United States")
+        await user.type(screen.getByRole('textbox', {name: /phone/i}), "334-820-9553")
+        await user.type(screen.getByRole('textbox', {name: /city/i}), "Lanett")
+        await user.selectOptions(screen.getByRole('combobox', {name: /how did you hear about us/i}), "LinkedIn")
+        await user.click(screen.getByRole('button', {name: /submit application/i}))
 
+        //ASSERT
+        expect(createJobApplication).toHaveBeenCalledTimes(1);
+        expect(await screen.findByText('Unable to submit application. Please try again.')).toBeInTheDocument();
+        expect(screen.getByRole('combobox', {name:/how did you hear about us?/i})).toHaveValue('LinkedIn')
     });
-    it('should render a validation error when user does not select a referral type and attempts to submit  ', () => {
-
-    });
-
 });
 
