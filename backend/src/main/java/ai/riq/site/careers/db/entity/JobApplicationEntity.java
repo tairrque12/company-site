@@ -55,6 +55,9 @@ public class JobApplicationEntity {
     @Column(name = "website_url")
     private String websiteUrl;
 
+    @Column(name = "referred_source", nullable = false)
+    private String referral;
+
     // The backend controls when the application was submitted.
     @Column(name = "submitted_at", nullable = false)
     private Instant submittedAt;

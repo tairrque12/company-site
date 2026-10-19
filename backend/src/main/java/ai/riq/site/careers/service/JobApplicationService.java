@@ -45,6 +45,7 @@ public class JobApplicationService {
                 .city(requestDTO.getCity())
                 .linkedinUrl(requestDTO.getLinkedinUrl())
                 .websiteUrl(requestDTO.getWebsiteUrl())
+                .referral(requestDTO.getReferral())
                 .submittedAt(Instant.now())
                 .build();
 

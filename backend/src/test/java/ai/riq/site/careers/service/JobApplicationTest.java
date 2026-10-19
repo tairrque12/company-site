@@ -52,6 +52,7 @@ public class JobApplicationTest {
                 .country("United States")
                 .phone("334-820-9553")
                 .city("Lanett")
+                .referral("LinkedIn")
                 .build();
 
         //EXPECTED RESPONSE AFTER SUBMITTING
@@ -86,6 +87,7 @@ public class JobApplicationTest {
                 .country("United States")
                 .phone("334-820-9553")
                 .city("Lanett")
+                .referral("LinkedIn")
                 .submittedAt(Instant.parse("2026-10-01T12:00:00Z"))
                 .build();
 
@@ -93,7 +95,7 @@ public class JobApplicationTest {
         when(jobApplicationRepository.save(any(JobApplicationEntity.class))).thenReturn(savedApplication);
 
         //ACT - SHOULD CALL REAL SERVICE
-                                                    //HERE IS INFORMATION THEY SUBMITTED, SAVE THEIR APPLICATION
+        //HERE IS INFORMATION THEY SUBMITTED, SAVE THEIR APPLICATION
         JobApplicationResponseDTO actualResponse = jobApplicationService.save(jobApplicationRequestDTO);
 
         //ASSERT

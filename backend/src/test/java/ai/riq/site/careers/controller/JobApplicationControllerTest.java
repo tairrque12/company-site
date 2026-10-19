@@ -51,11 +51,9 @@ public class JobApplicationControllerTest {
                 .standaloneSetup(jobApplicationController)
                 .build();
     }
-
     // TEST 1: DIRECT CONTROLLER UNIT TEST
     @Test
     void shouldCreateApplication() {
-
         // ARRANGE - Information submitted by the applicant
         JobApplicationRequestDTO requestDTO =
                 JobApplicationRequestDTO.builder()
@@ -67,6 +65,7 @@ public class JobApplicationControllerTest {
                         .country("United States")
                         .phone("334-820-9553")
                         .city("Lanett")
+                        .referral("LinkedIn")
                         .build();
 
         // Expected result after saving
@@ -96,7 +95,6 @@ public class JobApplicationControllerTest {
                 HttpStatus.CREATED,
                 actualResponse.getStatusCode()
         );
-
         // ASSERT - Returned the expected response body
         assertThat(actualResponse.getBody())
                 .usingRecursiveComparison()
@@ -106,7 +104,6 @@ public class JobApplicationControllerTest {
     // TEST 2: MOCKMVC HTTP POST TEST
     @Test
     void shouldReturn201WhenApplicationIsSubmitted() throws Exception {
-
         // ARRANGE
         JobApplicationRequestDTO requestDTO =
                 JobApplicationRequestDTO.builder()
@@ -117,9 +114,9 @@ public class JobApplicationControllerTest {
                         .email("tbaker1312@gmail.com")
                         .country("United States")
                         .phone("334-820-9553")
+                        .referral("LinkedIn")
                         .city("Lanett")
                         .build();
-
         JobApplicationResponseDTO expectedResponse =
                 JobApplicationResponseDTO.builder()
                         .id(10L)
@@ -129,11 +126,9 @@ public class JobApplicationControllerTest {
                         .departmentName("Robotics")
                         .submittedAt("2026-10-01T12:00:00Z")
                         .build();
-
         // The service is mocked because we're testing the controller
         when(jobApplicationService.save(requestDTO))
                 .thenReturn(expectedResponse);
-
         // ACT + ASSERT
         mockMvc.perform(
                         post("/api/job-applications")
@@ -142,15 +137,12 @@ public class JobApplicationControllerTest {
                                         objectMapper.writeValueAsString(requestDTO)
                                 )
                 )
-
                 // Verify HTTP status
                 .andExpect(status().isCreated())
-
                 // Verify response is JSON
                 .andExpect(content().contentTypeCompatibleWith(
                         MediaType.APPLICATION_JSON
                 ))
-
                 // Verify returned JSON fields
                 .andExpect(jsonPath("$.id").value(10))
                 .andExpect(jsonPath("$.firstName").value("Tairrque"))
@@ -159,7 +151,6 @@ public class JobApplicationControllerTest {
                 .andExpect(jsonPath("$.departmentName").value("Robotics"))
                 .andExpect(jsonPath("$.submittedAt")
                         .value("2026-10-01T12:00:00Z"));
-
         // Verify the service was called
         verify(jobApplicationService).save(requestDTO);
     }
