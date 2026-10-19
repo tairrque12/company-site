@@ -23,6 +23,7 @@ public class JobApplicationRequestDTO {
     private String city;
     private String linkedinUrl;
     private String websiteUrl;
+    private String referral;
 }
 
 // NO ID, RESUME PATH OR SUBMITTED AT.

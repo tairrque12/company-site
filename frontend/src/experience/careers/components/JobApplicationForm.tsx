@@ -30,6 +30,8 @@ const schema = yup.object({
     linkedinUrl: yup.string().optional(),
 
     websiteUrl: yup.string().optional(),
+
+    referral: yup.string().required('Referral Source Is Required')
 });
 
 type FormValues = yup.InferType<typeof schema>;
@@ -82,6 +84,7 @@ export function JobApplicationForm({
             );
         }
     };
+
 
     if (isSubmitted) {
         return (
@@ -304,6 +307,33 @@ export function JobApplicationForm({
                         {errors.city && (
                             <p role="alert" className={errorClassName}>
                                 {errors.city.message}
+                            </p>
+                        )}
+                    </div>
+
+                    {/*Referral*/}
+                    <div>
+                        <label htmlFor="referral" className={labelClassName}>
+                            How Did You Hear About Us?
+                        </label>
+
+                        <select
+                        id="referral"
+                        className={inputClassName}
+                        aria-invalid={!!errors.referral}
+                        {...register('referral')}
+                        >
+                            <option value=''>Select An Option</option>
+                            <option value='LinkedIn'>LinkedIn</option>
+                            <option value='Company Website'>Company Website</option>
+                            <option value='Employee Referral'>Employee Referral</option>
+                            <option value='Job Fair'>Job Fair</option>
+                            <option value='Other'>Other</option>
+                    </select>
+
+                        {errors.referral && (
+                            <p role="alert" className={errorClassName}>
+                                {errors.referral.message}
                             </p>
                         )}
                     </div>

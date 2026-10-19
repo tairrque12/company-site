@@ -1,4 +1,3 @@
-
 import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {afterEach, describe, expect, it, vi} from "vitest";
@@ -14,7 +13,7 @@ vi.mock("../clients/CareersClient", () => ({
 // Reusable helper for rendering the form with a job posting ID.
 const renderJobApplicationForm = (jobPostingId: number = 5) => {
     return render(
-        <JobApplicationForm jobPostingId={jobPostingId} />
+        <JobApplicationForm jobPostingId={jobPostingId}/>
     );
 };
 
@@ -211,4 +210,112 @@ describe("JobApplicationForm", () => {
             })
         ).toBeEnabled();
     });
+    it('should render a form field titled how did you hear about us ', () => {
+        renderJobApplicationForm();
+        expect(screen.getByLabelText('How Did You Hear About Us?')).toBeInTheDocument();
+    });
+    it('should render a dropdown with select criteria', () => {
+        renderJobApplicationForm();
+        const options = screen.getAllByRole('option');
+        expect(screen.getByRole('combobox', {name: /how did you hear about us/i})).toBeInTheDocument();
+        expect(options).toHaveLength(6);
+        expect(screen.getByRole('option', {name: /LinkedIn/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Company Website/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Employee Referral/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Job Fair/i})).toBeInTheDocument();
+        expect(screen.getByRole('option', {name: /Other/i})).toBeInTheDocument();
+    });
+    it('should display the selected referral source', async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        const dropdown = screen.getByRole('combobox', {name: /how did you hear about us/i})
+        //ACT
+        await user.selectOptions(dropdown, "LinkedIn")
+        //ASSERT
+        expect(dropdown).toHaveValue("LinkedIn");
+        //ACT
+        await user.selectOptions(dropdown, "Company Website")
+        //ASSERT
+        expect(dropdown).toHaveValue("Company Website")
+    });
+    it('should save the application with selected criteria when submit is clicked', async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        vi.mocked(createJobApplication).mockResolvedValue({
+            id: 100,
+            firstName: "Tairrque",
+            lastName: "Baker",
+            jobPostingTitle: "Robotics Software Engineer",
+            departmentName: "Engineering",
+            submittedAt: "2026-10-12T13:00:00"
+        });
+        renderJobApplicationForm(10);
+        //ACT
+        await user.type(screen.getByRole('textbox', {name: /^first name$/i}), "Tairrque")
+        await user.type(screen.getByRole('textbox', {name: /last name/i}), "Baker")
+        await user.type(screen.getByRole('textbox', {name: /^email$/i}), "test@example.com")
+        await user.type(screen.getByRole('textbox', {name: /country/i}), "United States")
+        await user.type(screen.getByRole('textbox', {name: /phone/i}), "334-820-9553")
+        await user.type(screen.getByRole('textbox', {name: /city/i}), "Lanett")
+        await user.selectOptions(screen.getByRole('combobox', {name: /how did you hear about us/i}), "LinkedIn")
+        await user.click(screen.getByRole('button', {name: /submit application/i}))
+
+        //ASSERT
+        expect(createJobApplication).toHaveBeenCalledWith(
+            expect.objectContaining({
+                jobPostingId: 10,
+                referral: "LinkedIn"
+            })
+        );
+        expect(createJobApplication).toHaveBeenCalledTimes(1);
+        expect(await screen.findByRole('status')).toHaveTextContent('Application Submitted Successfully');
+    });
+    it('should not submit application when referralSource is not selected', async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        //ACT
+        await user.type(
+            screen.getByRole("textbox", {name: /^first name$/i}),
+            "Tairrque"
+        );
+        await user.type(screen.getByLabelText(/last name/i), "Baker");
+        await user.type(screen.getByLabelText(/email/i), "test@example.com");
+        await user.type(screen.getByLabelText(/country/i), "United States");
+        await user.type(screen.getByLabelText(/phone/i), "334-820-9553");
+        await user.type(screen.getByLabelText(/city/i), "Lanett");
+        await user.click(
+            screen.getByRole("button", {
+                name: /submit application/i
+            })
+        );
+        //ASSERT
+        expect(await screen.findByText('Referral Source Is Required')).toBeInTheDocument();
+        expect(createJobApplication).not.toHaveBeenCalled();
+    });
+    it('should display an error and retain referral when submission fails', async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        vi.mocked(createJobApplication).mockRejectedValue(
+            new Error('Server Error')
+        );
+        renderJobApplicationForm(10);
+
+        //ACT - FILL OUT ALL REQUIRED FIELDS
+        await user.type(screen.getByRole('textbox', {name: /^first name$/i}), "Tairrque")
+        await user.type(screen.getByRole('textbox', {name: /last name/i}), "Baker")
+        await user.type(screen.getByRole('textbox', {name: /^email$/i}), "test@example.com")
+        await user.type(screen.getByRole('textbox', {name: /country/i}), "United States")
+        await user.type(screen.getByRole('textbox', {name: /phone/i}), "334-820-9553")
+        await user.type(screen.getByRole('textbox', {name: /city/i}), "Lanett")
+        await user.selectOptions(screen.getByRole('combobox', {name: /how did you hear about us/i}), "LinkedIn")
+        await user.click(screen.getByRole('button', {name: /submit application/i}))
+
+        //ASSERT
+        expect(createJobApplication).toHaveBeenCalledTimes(1);
+        expect(await screen.findByText('Unable to submit application. Please try again.')).toBeInTheDocument();
+        expect(screen.getByRole('combobox', {name:/how did you hear about us?/i})).toHaveValue('LinkedIn')
+    });
 });
+

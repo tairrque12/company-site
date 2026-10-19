@@ -54,6 +54,7 @@ export interface JobApplicationRequest{
     city: string;
     linkedinUrl?: string;
     websiteUrl?: string;
+    referral: string;
 }
 //CONFIRMATION TO USER IT HAS SUBMITTED
 export interface JobApplicationResponse{
