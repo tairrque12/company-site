@@ -338,6 +338,24 @@ export function JobApplicationForm({
                         )}
                     </div>
 
+                    {/*WORK ARRANGEMENT*/}
+                    <div>
+                        <label htmlFor={"workArrangement"} className={labelClassName}>
+                            Preferred Work Arrangement
+                        </label>
+
+                        <select
+                        id={"workArrangement"}
+                        className={inputClassName}
+                        >
+                            <option value=''>Select An Option</option>
+                            <option value='Remote'>Remote</option>
+                            <option value='Hybrid'>Hybrid</option>
+                            <option value='On-Site'>On-Site</option>
+                        </select>
+
+                    </div>
+
                 </div>
 
                 {/* PROFESSIONAL LINKS */}

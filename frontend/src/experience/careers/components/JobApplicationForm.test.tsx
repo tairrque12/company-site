@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from "@testing-library/react";
+import {render, screen, waitFor, within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
@@ -153,7 +153,6 @@ describe("JobApplicationForm", () => {
             departmentName: "Engineering",
             submittedAt: "2026-10-12T13:00:00"
         });
-
         renderJobApplicationForm(10);
         // ACT
         await user.type(screen.getByLabelText("First Name"), "Tairrque");
@@ -162,7 +161,6 @@ describe("JobApplicationForm", () => {
         await user.type(screen.getByLabelText("Country"), "United States");
         await user.type(screen.getByLabelText("Phone"), "334-820-9553");
         await user.type(screen.getByLabelText("City"), "Lanett");
-
         await user.click(
             screen.getByRole("button", {
                 name: /submit application/i
@@ -210,6 +208,7 @@ describe("JobApplicationForm", () => {
             })
         ).toBeEnabled();
     });
+    //HOW DID YOU HEAR ABOUT US FIELD
     it('should render a form field titled how did you hear about us ', () => {
         renderJobApplicationForm();
         expect(screen.getByLabelText('How Did You Hear About Us?')).toBeInTheDocument();
@@ -301,7 +300,6 @@ describe("JobApplicationForm", () => {
             new Error('Server Error')
         );
         renderJobApplicationForm(10);
-
         //ACT - FILL OUT ALL REQUIRED FIELDS
         await user.type(screen.getByRole('textbox', {name: /^first name$/i}), "Tairrque")
         await user.type(screen.getByRole('textbox', {name: /last name/i}), "Baker")
@@ -316,6 +314,26 @@ describe("JobApplicationForm", () => {
         expect(createJobApplication).toHaveBeenCalledTimes(1);
         expect(await screen.findByText('Unable to submit application. Please try again.')).toBeInTheDocument();
         expect(screen.getByRole('combobox', {name:/how did you hear about us?/i})).toHaveValue('LinkedIn')
+    });
+    //PREFERRED WORK ARRANGEMENT FIELD
+    it('should render preferred work arrangement field ', () => {
+        renderJobApplicationForm();
+        expect(screen.getByLabelText('Preferred Work Arrangement')).toBeInTheDocument();
+    });
+    it('should render the work arrangement and retain selection', async () => {
+        //ARRANGE
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        const dropdown =(screen.getByRole('combobox', {name:/preferred work arrangement/i}))
+        //ASSERT-CHECK DROPDOWN OPTIONS
+        const options = within(dropdown).getAllByRole('option')
+        expect(options).toHaveLength(4);
+       expect(within(dropdown).getByRole('option', {name:/remote/i})).toBeInTheDocument();
+       expect(within(dropdown).getByRole('option', {name:/hybrid/i})).toBeInTheDocument();
+       expect(within(dropdown).getByRole('option', {name:/on-site/i})).toBeInTheDocument();
+       //ACT-SELECT REMOTE
+        await user.selectOptions(dropdown, 'Remote')
+        expect(dropdown).toHaveValue("Remote");
     });
 });
 
