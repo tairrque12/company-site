@@ -31,7 +31,11 @@ const schema = yup.object({
 
     websiteUrl: yup.string().optional(),
 
-    referral: yup.string().required('Referral Source Is Required')
+    referral: yup.string().required('Referral Source Is Required'),
+
+    workArrangement: yup.string().required('Work Arrangement Is Required')
+
+
 });
 
 type FormValues = yup.InferType<typeof schema>;
@@ -347,6 +351,8 @@ export function JobApplicationForm({
                         <select
                         id={"workArrangement"}
                         className={inputClassName}
+                        aria-invalid={!!errors.workArrangement}
+                        {...register('workArrangement')}
                         >
                             <option value=''>Select An Option</option>
                             <option value='Remote'>Remote</option>
@@ -354,6 +360,11 @@ export function JobApplicationForm({
                             <option value='On-Site'>On-Site</option>
                         </select>
 
+                        {errors.workArrangement && (
+                            <p role='alert' className={errorClassName}>
+                                {errors.workArrangement.message}
+                            </p>
+                        )}
                     </div>
 
                 </div>

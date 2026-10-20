@@ -335,5 +335,23 @@ describe("JobApplicationForm", () => {
         await user.selectOptions(dropdown, 'Remote')
         expect(dropdown).toHaveValue("Remote");
     });
+    it('should not submit application when work arrangement is not selected', async () => {
+        //ARRANGE-SET UP THE TEST
+        const user = userEvent.setup();
+        renderJobApplicationForm();
+        //ACT-WHAT IS THE USER DOING
+        await user.type(screen.getByRole('textbox', {name:/^first name$/i}), 'Tairrque')
+        await user.type(screen.getByRole('textbox', {name:/last name/i}), 'Baker')
+        await user.type(screen.getByRole('textbox', {name:/email/i}), 'test@gmail.com')
+        await user.type(screen.getByRole('textbox', {name:/country/i}), 'United States')
+        await user.type(screen.getByRole('textbox', {name:/phone/i}), '334-820-9553')
+        await user.type(screen.getByRole('textbox', {name:/city/i}), 'Austin')
+        await user.selectOptions(screen.getByRole('combobox', {name:/how did you hear about us/i}), 'LinkedIn');
+        await user.click(screen.getByRole('button', {name:/submit application/i}))
+        //ASSERT-WHAT DO WE EXPECT
+        expect(await screen.findByText('Work Arrangement Is Required')).toBeInTheDocument();
+        expect(createJobApplication).not.toHaveBeenCalled();
+    });
+
 });
 
